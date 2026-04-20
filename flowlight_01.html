@@ -57,8 +57,13 @@ input[type=color]{width:30px;height:26px;border-radius:5px;border:1px solid var(
 .btn.accent:hover{background:#f0e0b0}
 .btn:disabled{opacity:0.35;cursor:default;pointer-events:none}
 
-main{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--bg)}
+main{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--bg);gap:0}
 main::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.preview-row{display:none;width:100%;flex:1;min-height:0;gap:1px;background:var(--border)}
+.preview-pane{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;background:var(--bg);min-width:0}
+.pane-label{position:absolute;top:8px;left:12px;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);z-index:3;pointer-events:none;background:rgba(10,10,11,0.7);padding:2px 8px;border-radius:20px;border:1px solid var(--border)}
+.checker{background-image:linear-gradient(45deg,#1a1a1a 25%,transparent 25%),linear-gradient(-45deg,#1a1a1a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1a1a 75%),linear-gradient(-45deg,transparent 75%,#1a1a1a 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+.pane-canvas{display:block;max-width:100%;max-height:100%;object-fit:contain}
 
 #drop-zone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .2s}
 #drop-zone:hover{background:rgba(232,213,163,0.02)}
@@ -68,8 +73,10 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
 .drop-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.35rem}
 .drop-sub{font-size:.65rem;color:var(--muted)}
 
-#canvas-wrap{display:none;border-radius:8px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.9),0 0 0 1px var(--border2);max-width:100%;position:relative;z-index:1}
-#glcanvas{display:block;max-width:100%;max-height:calc(100vh - 120px)}
+#canvas-wrap{display:none;width:100%;flex:1;min-height:0}
+#glcanvas{display:none}
+#cv-streak{max-width:100%;max-height:100%;object-fit:contain}
+#cv-add{max-width:100%;max-height:100%;object-fit:contain}
 
 .statusbar{position:absolute;bottom:.85rem;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 14px;z-index:10;white-space:nowrap}
 
@@ -138,7 +145,17 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
     <div class="drop-sub">PNG / JPG — 灰階扭曲光條 UV</div>
   </div>
   <input type="file" id="fin" accept="image/*" style="display:none">
-  <div id="canvas-wrap"><canvas id="glcanvas"></canvas></div>
+  <canvas id="glcanvas" style="display:none"></canvas>
+  <div id="canvas-wrap" class="preview-row">
+    <div class="preview-pane checker">
+      <div class="pane-label">光條 — 透明</div>
+      <canvas id="cv-streak" class="pane-canvas"></canvas>
+    </div>
+    <div class="preview-pane" style="background:#111">
+      <div class="pane-label">Add — 疊加底圖</div>
+      <canvas id="cv-add" class="pane-canvas"></canvas>
+    </div>
+  </div>
   <div class="statusbar" id="status">準備就緒</div>
 </main>
 </div>
@@ -150,6 +167,8 @@ const $ = id => document.getElementById(id);
 const canvas = $('glcanvas');
 const glOpts = { premultipliedAlpha: false, preserveDrawingBuffer: true, alpha: true };
 const gl = canvas.getContext('webgl', glOpts) || canvas.getContext('experimental-webgl', glOpts);
+const cvStreak = $('cv-streak');
+const cvAdd    = $('cv-add');
 if (!gl) { alert('瀏覽器不支援 WebGL'); }
 
 const VS = `
@@ -225,7 +244,7 @@ gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 gl.uniform1i(U['u_tex'], 0);
 
-let imgLoaded = false;
+let imgLoaded = false, srcImg = null;
 let animId = null, playing = false, startTime = null, pausedTime = 0;
 
 // ── Sliders ──
@@ -269,6 +288,7 @@ $('fin').onchange = e => { const f = e.target.files[0]; if (f) loadFile(f); };
 function loadFile(f) {
   const img = new Image();
   img.onload = () => {
+    srcImg = img;
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
 
@@ -276,6 +296,8 @@ function loadFile(f) {
     const sc = Math.min(maxSide / img.naturalWidth, maxSide / img.naturalHeight, 1);
     canvas.width  = Math.round(img.naturalWidth  * sc);
     canvas.height = Math.round(img.naturalHeight * sc);
+    cvStreak.width = cvAdd.width  = canvas.width;
+    cvStreak.height = cvAdd.height = canvas.height;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     imgLoaded = true;
@@ -283,7 +305,7 @@ function loadFile(f) {
     pausedTime = 0;
 
     $('drop-zone').classList.add('hidden');
-    $('canvas-wrap').style.display = 'block';
+    $('canvas-wrap').style.display = 'flex';
     ['btn-play','btn-reup','btn-exp'].forEach(id => $(id).disabled = false);
     render(0);
     setStatus(`${img.naturalWidth}×${img.naturalHeight}`);
@@ -305,7 +327,27 @@ function render(t) {
   gl.uniform1f(U['u_intensity'], parseFloat($('r-int').value) / 10.0);
   gl.uniform1f(U['u_pos'],       parseFloat($('r-pos').value));
   gl.uniform4f(U['u_color'], 1.0, 1.0, 1.0, fa);
+  gl.clearColor(0.0, 0.0, 0.0, 0.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  updatePreviews();
+}
+
+function updatePreviews() {
+  const W = canvas.width, H = canvas.height;
+
+  // ── 左：光條透明（直接複製 GL 輸出）
+  const sctx = cvStreak.getContext('2d');
+  sctx.clearRect(0, 0, W, H);
+  sctx.drawImage(canvas, 0, 0);
+
+  // ── 右：Add 疊加在原圖
+  const actx = cvAdd.getContext('2d');
+  actx.clearRect(0, 0, W, H);
+  actx.drawImage(srcImg, 0, 0, W, H);          // 先畫底圖
+  actx.globalCompositeOperation = 'screen';    // Add / Screen 疊光條
+  actx.drawImage(canvas, 0, 0);
+  actx.globalCompositeOperation = 'source-over';
 }
 
 // ── Preview ──
