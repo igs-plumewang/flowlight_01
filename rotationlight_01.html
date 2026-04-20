@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RotationLight — 旋轉光條工具</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b;--surface:#111114;--surface2:#18181c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --text:#f0ede8;--muted:#6b6870;
+  --accent:#e8d5a3;--accent2:#b8a87a;--glow:rgba(232,213,163,0.15);
+  --track:#1e1e22;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+header{padding:1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:1.25rem;flex-shrink:0;position:relative}
+header::after{content:'';position:absolute;bottom:-1px;left:1.75rem;right:1.75rem;height:1px;background:linear-gradient(90deg,var(--accent),transparent 60%);opacity:0.35}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.02em;color:var(--accent)}
+.logo span{color:var(--muted);font-weight:400}
+.tagline{font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+
+.app{flex:1;display:grid;grid-template-columns:272px 1fr;min-height:0;overflow:hidden}
+
+aside{border-right:1px solid var(--border);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.25rem;overflow-y:auto;background:var(--surface);flex-shrink:0}
+aside::-webkit-scrollbar{width:3px}
+aside::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.sec-label{font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.5rem}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.ctrl-group{display:flex;flex-direction:column;gap:0.65rem}
+.ctrl{display:flex;flex-direction:column;gap:4px}
+.ctrl-row{display:flex;align-items:center;gap:6px}
+.ctrl label{font-size:0.65rem;color:var(--muted);letter-spacing:0.04em}
+
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:var(--track);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--accent2);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);cursor:pointer}
+
+.vnum{font-size:0.62rem;font-weight:500;color:var(--accent);background:rgba(232,213,163,0.08);border:1px solid rgba(232,213,163,0.15);border-radius:4px;padding:1px 4px;width:52px;text-align:center;font-variant-numeric:tabular-nums;flex-shrink:0;font-family:'DM Mono',monospace;outline:none;-moz-appearance:textfield}
+.vnum::-webkit-inner-spin-button,.vnum::-webkit-outer-spin-button{-webkit-appearance:none}
+.vnum:focus{border-color:var(--accent);background:rgba(232,213,163,0.14)}
+
+input[type=color]{width:30px;height:26px;border-radius:5px;border:1px solid var(--border2);background:none;cursor:pointer;padding:2px;flex-shrink:0}
+
+.btn-group{display:flex;flex-direction:column;gap:0.45rem;margin-top:auto}
+.btn-row{display:flex;gap:0.4rem}
+.btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.05em;padding:0.5rem 0.8rem;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:var(--surface2);color:var(--text);flex:1;text-align:center}
+.btn:hover{background:var(--surface);border-color:var(--accent2);color:var(--accent)}
+.btn.accent{background:var(--accent);color:#0a0a0b;border-color:var(--accent);font-weight:500}
+.btn.accent:hover{background:#f0e0b0}
+.btn:disabled{opacity:0.35;cursor:default;pointer-events:none}
+
+main{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--bg);gap:0}
+main::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.preview-row{display:none;width:100%;flex:1;min-height:0;gap:1px;background:var(--border)}
+.preview-pane{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;background:var(--bg);min-width:0}
+.pane-label{position:absolute;top:8px;left:12px;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);z-index:3;pointer-events:none;background:rgba(10,10,11,0.7);padding:2px 8px;border-radius:20px;border:1px solid var(--border)}
+.checker{background-image:linear-gradient(45deg,#1a1a1a 25%,transparent 25%),linear-gradient(-45deg,#1a1a1a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1a1a 75%),linear-gradient(-45deg,transparent 75%,#1a1a1a 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+.pane-canvas{display:block;max-width:100%;max-height:100%;object-fit:contain}
+
+#drop-zone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .2s}
+#drop-zone:hover{background:rgba(232,213,163,0.02)}
+#drop-zone.hidden{display:none}
+.drop-icon{width:52px;height:52px;border-radius:50%;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;transition:border-color .2s,box-shadow .2s}
+#drop-zone:hover .drop-icon{border-color:var(--accent2);box-shadow:0 0 20px var(--glow)}
+.drop-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.35rem}
+.drop-sub{font-size:.65rem;color:var(--muted)}
+
+#canvas-wrap{display:none;width:100%;flex:1;min-height:0}
+#glcanvas{display:none}
+#cv-streak{max-width:100%;max-height:100%;object-fit:contain}
+#cv-add{max-width:100%;max-height:100%;object-fit:contain}
+
+.statusbar{position:absolute;bottom:.85rem;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 14px;z-index:10;white-space:nowrap}
+
+@media(max-width:680px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{border-right:none;border-bottom:1px solid var(--border);max-height:42vh}body{overflow:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Rotation<span>Light</span></div>
+  <div class="tagline">Shader-based rotation light tool</div>
+</header>
+
+<div class="app">
+<aside>
+  <div>
+    <div class="sec-label">光條</div>
+    <div class="ctrl-group">
+      <div class="ctrl"><label>間距 — Ray Spacing</label><div class="ctrl-row"><input type="range" id="r-spc" min="0" max="30" step="0.5" value="6"><input type="number" class="vnum" id="v-spc" min="0" max="30" step="0.5" value="6"></div></div>
+      <div class="ctrl"><label>粗細 — Ray Size</label><div class="ctrl-row"><input type="range" id="r-sz" min="-100" max="100" step="1" value="2"><input type="number" class="vnum" id="v-sz" min="-100" max="100" step="1" value="2"></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="sec-label">動態</div>
+    <div class="ctrl-group">
+      <div class="ctrl"><label>旋轉速度 — Rotate Speed</label><div class="ctrl-row"><input type="range" id="r-spd" min="-3" max="3" step="0.05" value="0.5"><input type="number" class="vnum" id="v-spd" min="-3" max="3" step="0.05" value="0.5"></div></div>
+      <div class="ctrl"><label>中心 X — Center X</label><div class="ctrl-row"><input type="range" id="r-cx" min="0" max="1" step="0.01" value="0.5"><input type="number" class="vnum" id="v-cx" min="0" max="1" step="0.01" value="0.5"></div></div>
+      <div class="ctrl"><label>中心 Y — Center Y</label><div class="ctrl-row"><input type="range" id="r-cy" min="0" max="1" step="0.01" value="0.5"><input type="number" class="vnum" id="v-cy" min="0" max="1" step="0.01" value="0.5"></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="sec-label">扭曲</div>
+    <div class="ctrl-group">
+      <div class="ctrl"><label>灰階扭曲強度 — Intensity</label><div class="ctrl-row"><input type="range" id="r-int" min="0" max="100" step="1" value="15"><input type="number" class="vnum" id="v-int" min="0" max="100" step="1" value="15"></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="sec-label">顏色</div>
+    <div class="ctrl-group">
+      <div class="ctrl"><label>亮度</label><div class="ctrl-row"><input type="range" id="r-alpha" min="0" max="2" step="0.01" value="0.9"><input type="number" class="vnum" id="v-alpha" min="0" max="2" step="0.01" value="0.9"></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="sec-label">匯出</div>
+    <div class="ctrl-group">
+      <div class="ctrl"><label>秒數</label><div class="ctrl-row"><input type="range" id="r-sec" min="0.5" max="10" step="0.5" value="2"><input type="number" class="vnum" id="v-sec" min="0.5" max="10" step="0.5" value="2"></div></div>
+      <div class="ctrl"><label>FPS</label><div class="ctrl-row"><input type="range" id="r-fps" min="1" max="60" step="1" value="12"><input type="number" class="vnum" id="v-fps" min="1" max="60" step="1" value="12"></div></div>
+      <div class="ctrl"><label>每列幾幀</label><div class="ctrl-row"><input type="range" id="r-col" min="2" max="12" step="1" value="4"><input type="number" class="vnum" id="v-col" min="2" max="12" step="1" value="4"></div></div>
+    </div>
+  </div>
+  <div class="btn-group">
+    <div class="btn-row">
+      <button class="btn" id="btn-play" onclick="togglePlay()" disabled>▶ 預覽</button>
+      <button class="btn" id="btn-reup" onclick="reupload()" disabled>↑ 換圖</button>
+    </div>
+    <button class="btn accent" id="btn-exp" onclick="exportSheet()" disabled>匯出 Sprite Sheet</button>
+  </div>
+</aside>
+
+<main>
+  <div id="drop-zone" onclick="document.getElementById('fin').click()">
+    <div class="drop-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8d5a3" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </div>
+    <div class="drop-title">上傳圖片</div>
+    <div class="drop-sub">PNG / JPG — 灰階扭曲旋轉光條 UV</div>
+  </div>
+  <input type="file" id="fin" accept="image/*" style="display:none">
+  <canvas id="glcanvas" style="display:none"></canvas>
+  <div id="canvas-wrap" class="preview-row">
+    <div class="preview-pane checker">
+      <div class="pane-label">光條 — 透明</div>
+      <canvas id="cv-streak" class="pane-canvas"></canvas>
+    </div>
+    <div class="preview-pane" style="background:#111">
+      <div class="pane-label">Add — 疊加底圖</div>
+      <canvas id="cv-add" class="pane-canvas"></canvas>
+    </div>
+  </div>
+  <div class="statusbar" id="status">準備就緒</div>
+</main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ── WebGL init ──
+const canvas = $('glcanvas');
+const glOpts = { premultipliedAlpha: false, preserveDrawingBuffer: true, alpha: true };
+const gl = canvas.getContext('webgl', glOpts) || canvas.getContext('experimental-webgl', glOpts);
+const cvStreak = $('cv-streak');
+const cvAdd    = $('cv-add');
+if (!gl) { alert('瀏覽器不支援 WebGL'); }
+
+const VS = `
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){
+  v_uv = vec2(a_pos.x * 0.5 + 0.5, 0.5 - a_pos.y * 0.5);
+  gl_Position = vec4(a_pos, 0.0, 1.0);
+}`;
+
+const FS = `
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_tex;
+uniform float u_spacing;
+uniform float u_size;
+uniform float u_speed;
+uniform float u_time;
+uniform float u_intensity;
+uniform float u_cx;
+uniform float u_cy;
+uniform vec4  u_color;
+
+#define PI 3.14159265
+
+void main(){
+  vec2 uv = v_uv;
+  vec4 texCol = texture2D(u_tex, uv);
+  float r = texCol.r, g = texCol.g, b = texCol.b;
+  // 原始 alpha — 用來裁切光條，確保只在圖片範圍內顯示
+  float origA = texCol.a;
+
+  // 灰階扭曲（只影響旋轉幾何的擾動，不影響裁切 alpha）
+  float gray   = r*0.299 + g*0.587 + b*0.114;
+  float offset = gray * u_intensity;
+  vec2 uv_d    = uv + vec2(offset, offset);
+
+  // 旋轉中心與角度完全基於原始 UV，扭曲不影響旋轉幾何
+  vec2 delta = uv - vec2(u_cx, u_cy);
+  float theta = atan(delta.y, delta.x);
+
+  // 時間旋轉（灰階擾動只加在 phase 偏移上，幅度極小，不影響中心）
+  float phaseDistort = (uv_d.x - uv.x) * u_intensity * 0.5;
+  float phase = (theta + u_time * u_speed * PI + phaseDistort) / (PI * 2.0);
+
+  // 重複光扇
+  float f      = fract(phase * u_spacing);
+  float tri    = abs((f - 0.5) * 2.0);
+  float shaped = (tri - 0.5) * 7.06 + u_size;
+  float mask   = clamp(shaped, 0.0, 1.0);
+
+  // 中心淡入（避免圓心聚合爆光）
+  float dist = length(delta) * 2.0;
+  float fade = clamp(dist * 3.0, 0.0, 1.0);
+  mask *= fade;
+
+  // 用原始 alpha 嚴格裁切，光條不超出圖片邊界
+  gl_FragColor = vec4(1.0, 1.0, 1.0, mask * origA * u_color.a);
+}`;
+
+function mkShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const aPos = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+const U = {};
+['u_spacing','u_size','u_speed','u_time','u_intensity','u_cx','u_cy','u_color','u_tex']
+  .forEach(n => U[n] = gl.getUniformLocation(prog, n));
+
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.uniform1i(U['u_tex'], 0);
+
+let imgLoaded = false, srcImg = null;
+let animId = null, playing = false, startTime = null, pausedTime = 0;
+
+// ── Sliders ──
+const sliders = [
+  ['r-spc','v-spc'],
+  ['r-sz', 'v-sz' ],
+  ['r-spd','v-spd'],
+  ['r-cx', 'v-cx' ],
+  ['r-cy', 'v-cy' ],
+  ['r-int','v-int'],
+  ['r-alpha','v-alpha'],
+  ['r-sec','v-sec'],
+  ['r-fps','v-fps'],
+  ['r-col','v-col'],
+];
+sliders.forEach(([rid, nid]) => {
+  const range = $(rid), num = $(nid);
+  range.oninput = () => {
+    num.value = range.value;
+    if (imgLoaded && !playing) render(curT());
+  };
+  const applyNum = () => {
+    let v = parseFloat(num.value);
+    if (isNaN(v)) return;
+    v = Math.max(parseFloat(range.min), Math.min(parseFloat(range.max), v));
+    num.value = v;
+    range.value = v;
+    if (imgLoaded && !playing) render(curT());
+  };
+  num.onchange = applyNum;
+  num.onkeydown = e => { if (e.key === 'Enter') applyNum(); };
+});
+
+function curT() {
+  return startTime ? (performance.now() - startTime) / 1000 : 0;
+}
+
+// ── Upload ──
+$('fin').onchange = e => { const f = e.target.files[0]; if (f) loadFile(f); };
+
+function loadFile(f) {
+  const img = new Image();
+  img.onload = () => {
+    srcImg = img;
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+
+    const maxSide = 800;
+    const sc = Math.min(maxSide / img.naturalWidth, maxSide / img.naturalHeight, 1);
+    canvas.width  = Math.round(img.naturalWidth  * sc);
+    canvas.height = Math.round(img.naturalHeight * sc);
+    cvStreak.width = cvAdd.width  = canvas.width;
+    cvStreak.height = cvAdd.height = canvas.height;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    imgLoaded = true;
+    startTime = performance.now();
+    pausedTime = 0;
+
+    $('drop-zone').classList.add('hidden');
+    $('canvas-wrap').style.display = 'flex';
+    ['btn-play','btn-reup','btn-exp'].forEach(id => $(id).disabled = false);
+    render(0);
+    setStatus(`${img.naturalWidth}×${img.naturalHeight}`);
+  };
+  img.onerror = () => setStatus('圖片載入失敗，請換一張');
+  img.src = URL.createObjectURL(f);
+}
+
+// ── Render ──
+function render(t) {
+  if (!imgLoaded) return;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  const fa = parseFloat($('r-alpha').value);
+  gl.uniform1f(U['u_spacing'],   parseFloat($('r-spc').value));
+  gl.uniform1f(U['u_size'],      parseFloat($('r-sz').value) / 10.0);
+  gl.uniform1f(U['u_speed'],     parseFloat($('r-spd').value));
+  gl.uniform1f(U['u_time'],      t);
+  gl.uniform1f(U['u_intensity'], parseFloat($('r-int').value) / 10.0);
+  gl.uniform1f(U['u_cx'],        parseFloat($('r-cx').value));
+  gl.uniform1f(U['u_cy'],        parseFloat($('r-cy').value));
+  gl.uniform4f(U['u_color'], 1.0, 1.0, 1.0, fa);
+  gl.clearColor(0.0, 0.0, 0.0, 0.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  updatePreviews();
+}
+
+function updatePreviews() {
+  const W = canvas.width, H = canvas.height;
+
+  // ── 左：光條透明（直接複製 GL 輸出）
+  const sctx = cvStreak.getContext('2d');
+  sctx.clearRect(0, 0, W, H);
+  sctx.drawImage(canvas, 0, 0);
+
+  // ── 右：Add 疊加在原圖
+  const actx = cvAdd.getContext('2d');
+  actx.clearRect(0, 0, W, H);
+  actx.drawImage(srcImg, 0, 0, W, H);          // 先畫底圖
+  actx.globalCompositeOperation = 'screen';    // Add / Screen 疊光條
+  actx.drawImage(canvas, 0, 0);
+  actx.globalCompositeOperation = 'source-over';
+}
+
+// ── Preview ──
+function togglePlay() { playing ? stopPlay() : startPlay(); }
+
+function startPlay() {
+  if (!imgLoaded) { setStatus('請先上傳圖片'); return; }
+  playing = true;
+  $('btn-play').textContent = '■ 停止';
+  startTime = performance.now() - pausedTime * 1000;
+  (function loop() {
+    render((performance.now() - startTime) / 1000);
+    animId = requestAnimationFrame(loop);
+  })();
+}
+
+function stopPlay() {
+  playing = false;
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  pausedTime = startTime ? (performance.now() - startTime) / 1000 : 0;
+  $('btn-play').textContent = '▶ 預覽';
+}
+
+function reupload() {
+  stopPlay(); pausedTime = 0; startTime = null; imgLoaded = false;
+  $('drop-zone').classList.remove('hidden');
+  $('canvas-wrap').style.display = 'none';
+  ['btn-play','btn-reup','btn-exp'].forEach(id => $(id).disabled = true);
+  setStatus('準備就緒');
+}
+
+// ── Export ──
+async function exportSheet() {
+  if (!imgLoaded) { setStatus('請先上傳圖片'); return; }
+  stopPlay();
+  const sec  = parseFloat($('r-sec').value);
+  const fps  = parseInt($('r-fps').value);
+  const totalFrames = Math.max(1, Math.round(sec * fps));
+  const cols = parseInt($('r-col').value);
+  const rows = Math.ceil(totalFrames / cols);
+  const fw = canvas.width, fh = canvas.height;
+
+  const sheet = document.createElement('canvas');
+  sheet.width = fw * cols; sheet.height = fh * rows;
+  const sctx = sheet.getContext('2d');
+  sctx.clearRect(0, 0, sheet.width, sheet.height);
+
+  const dur = sec;
+
+  for (let i = 0; i < totalFrames; i++) {
+    gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(U['u_streak_only'], 1.0);
+    render((i / totalFrames) * dur);
+      sctx.drawImage(canvas, (i % cols) * fw, Math.floor(i / cols) * fh);
+    setStatus(`產生幀 ${i+1}/${totalFrames}…`);
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  const a = document.createElement('a');
+  a.download = 'rotationlight_spritesheet.png';
+  a.href = sheet.toDataURL('image/png');
+  a.click();
+  setStatus(`完成！${totalFrames} 幀 (${sec}s × ${fps}fps, ${cols}×${rows}) 已下載`);
+  render(curT());
+}
+
+function setStatus(msg) { $('status').textContent = msg; }
+
+// Drag & drop
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+});
+</script>
+</body>
+</html>
