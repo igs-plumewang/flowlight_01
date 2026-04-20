@@ -208,7 +208,7 @@ void main(){
   float shaped = (tri - 0.5) * 7.06 + u_size;
   float mask   = clamp(shaped, 0.0, 1.0);
   // white streak, alpha = mask * 底圖alpha（有底圖才顯示光條）
-  gl_FragColor = vec4(1.0, 1.0, 1.0, mask * a);
+  gl_FragColor = vec4(1.0, 1.0, 1.0, mask * a * u_color.a);
 }`;
 
 function mkShader(type, src) {
