@@ -191,17 +191,23 @@ uniform float u_time;
 uniform float u_intensity;
 uniform float u_pos;
 uniform vec4  u_color;
+uniform float u_aspect;
 void main(){
   vec2 uv = v_uv;
   vec4 texCol = texture2D(u_tex, uv);
   float r = texCol.r, g = texCol.g, b = texCol.b, a = texCol.a;
-  float gray   = r*0.299 + g*0.587 + b*0.114;
-  float offset = gray * u_intensity;
-  vec2 uv_d    = uv + vec2(offset, offset);
+
+  // 1. 先旋轉（以圖片中心，補正長寬比）
   float rad    = u_angle * (3.14159265 / 180.0);
   float cosA   = cos(rad), sinA = sin(rad);
-  vec2  c      = uv_d - vec2(0.5);
+  vec2  c      = uv - vec2(0.5);
+  c.x *= u_aspect;
   float ru     = dot(vec2(cosA, -sinA), c) + 0.5;
+
+  // 2. 再用灰階做扭曲（只影響條紋 phase，不影響旋轉軸）
+  float gray   = r*0.299 + g*0.587 + b*0.114;
+  float offset = gray * u_intensity;
+  ru += offset;
   float phase  = (ru + u_time * u_speed + u_pos) * u_spacing;
   float f      = fract(phase);
   float tri    = abs((f - 0.5) * 2.0);
@@ -233,7 +239,7 @@ gl.enableVertexAttribArray(aPos);
 gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
 const U = {};
-['u_angle','u_spacing','u_size','u_speed','u_time','u_intensity','u_pos','u_color','u_tex']
+['u_angle','u_spacing','u_size','u_speed','u_time','u_intensity','u_pos','u_color','u_tex','u_aspect']
   .forEach(n => U[n] = gl.getUniformLocation(prog, n));
 
 const tex = gl.createTexture();
@@ -327,6 +333,7 @@ function render(t) {
   gl.uniform1f(U['u_intensity'], parseFloat($('r-int').value) / 10.0);
   gl.uniform1f(U['u_pos'],       parseFloat($('r-pos').value));
   gl.uniform4f(U['u_color'], 1.0, 1.0, 1.0, fa);
+  gl.uniform1f(U['u_aspect'], canvas.width / canvas.height);
   gl.clearColor(0.0, 0.0, 0.0, 0.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
