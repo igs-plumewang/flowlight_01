@@ -82,6 +82,7 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
 
 @media(max-width:680px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{border-right:none;border-bottom:1px solid var(--border);max-height:42vh}body{overflow:auto}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -104,7 +105,7 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
     <div class="sec-label">動態</div>
     <div class="ctrl-group">
       <div class="ctrl"><label>流動速度 — Time Speed</label><div class="ctrl-row"><input type="range" id="r-spd" min="-3" max="3" step="0.05" value="0.5"><input type="number" class="vnum" id="v-spd" min="-3" max="3" step="0.05" value="0.5"></div></div>
-      <div class="ctrl"><label>位移 — Flow Pos</label><div class="ctrl-row"><input type="range" id="r-pos" min="-1" max="1" step="0.01" value="0"><input type="number" class="vnum" id="v-pos" min="-1" max="1" step="0.01" value="0"></div></div>
+      <div class="ctrl"><label>位移 — Flow Pos</label><div class="ctrl-row"><input type="range" id="r-pos" min="-10" max="10" step="0.01" value="0"><input type="number" class="vnum" id="v-pos" min="-10" max="10" step="0.01" value="0"></div></div>
     </div>
   </div>
   <div>
@@ -122,9 +123,24 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
   <div>
     <div class="sec-label">匯出</div>
     <div class="ctrl-group">
-      <div class="ctrl"><label>秒數</label><div class="ctrl-row"><input type="range" id="r-sec" min="0.5" max="10" step="0.5" value="2"><input type="number" class="vnum" id="v-sec" min="0.5" max="10" step="0.5" value="2"></div></div>
-      <div class="ctrl"><label>FPS</label><div class="ctrl-row"><input type="range" id="r-fps" min="1" max="60" step="1" value="12"><input type="number" class="vnum" id="v-fps" min="1" max="60" step="1" value="12"></div></div>
-      <div class="ctrl"><label>每列幾幀</label><div class="ctrl-row"><input type="range" id="r-col" min="2" max="12" step="1" value="4"><input type="number" class="vnum" id="v-col" min="2" max="12" step="1" value="4"></div></div>
+      <div class="ctrl"><label>位移區間 <span id="lbl-pos-range" style="color:var(--muted);font-weight:400;font-size:0.6rem;letter-spacing:0.02em"></span></label>
+        <div class="ctrl-row" style="gap:6px;align-items:center">
+          <input type="number" class="vnum" id="v-pos-start" min="-10" max="10" step="0.01" value="0" style="width:48px">
+          <div style="flex:1;position:relative;height:20px;min-height:20px">
+            <canvas id="range-canvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:ew-resize;display:block;min-height:20px"></canvas>
+          </div>
+          <input type="number" class="vnum" id="v-pos-end" min="-10" max="10" step="0.01" value="1" style="width:48px">
+        </div>
+        <div style="height:2px"></div>
+      </div>
+      <div class="ctrl"><label>行列（如 3×3 = 9 張）</label>
+        <div class="ctrl-row" style="gap:6px">
+          <input type="number" class="vnum" id="v-rows" min="1" max="12" step="1" value="3" style="width:44px">
+          <span style="font-size:0.7rem;color:var(--muted)">×</span>
+          <input type="number" class="vnum" id="v-cols" min="1" max="12" step="1" value="3" style="width:44px">
+
+        </div>
+      </div>
     </div>
   </div>
   <div class="btn-group">
@@ -132,7 +148,10 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
       <button class="btn" id="btn-play" onclick="togglePlay()" disabled>▶ 預覽</button>
       <button class="btn" id="btn-reup" onclick="reupload()" disabled>↑ 換圖</button>
     </div>
-    <button class="btn accent" id="btn-exp" onclick="exportSheet()" disabled>匯出 Sprite Sheet</button>
+    <div class="btn-row">
+      <button class="btn accent" id="btn-exp-sheet" onclick="exportSheet('sheet')" disabled>合圖匯出</button>
+      <button class="btn accent" id="btn-exp-seq" onclick="exportSheet('seq')" disabled>散圖匯出</button>
+    </div>
   </div>
 </aside>
 
@@ -259,15 +278,13 @@ const sliders = [
   ['r-spc','v-spc'],
   ['r-sz', 'v-sz' ],
   ['r-spd','v-spd'],
-  ['r-int','v-int'],
   ['r-pos','v-pos'],
+  ['r-int','v-int'],
   ['r-alpha','v-alpha'],
-  ['r-sec','v-sec'],
-  ['r-fps','v-fps'],
-  ['r-col','v-col'],
 ];
 sliders.forEach(([rid, nid]) => {
   const range = $(rid), num = $(nid);
+  if (!range || !num) return;
   range.oninput = () => {
     num.value = range.value;
     if (imgLoaded && !playing) render(curT());
@@ -312,7 +329,7 @@ function loadFile(f) {
 
     $('drop-zone').classList.add('hidden');
     $('canvas-wrap').style.display = 'flex';
-    ['btn-play','btn-reup','btn-exp'].forEach(id => $(id).disabled = false);
+    ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id => $(id).disabled = false);
     render(0);
     setStatus(`${img.naturalWidth}×${img.naturalHeight}`);
   };
@@ -382,43 +399,84 @@ function reupload() {
   stopPlay(); pausedTime = 0; startTime = null; imgLoaded = false;
   $('drop-zone').classList.remove('hidden');
   $('canvas-wrap').style.display = 'none';
-  ['btn-play','btn-reup','btn-exp'].forEach(id => $(id).disabled = true);
+  ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id => $(id).disabled = true);
   setStatus('準備就緒');
 }
 
 // ── Export ──
-async function exportSheet() {
+async function exportSheet(mode) {
   if (!imgLoaded) { setStatus('請先上傳圖片'); return; }
   stopPlay();
-  const sec  = parseFloat($('r-sec').value);
-  const fps  = parseInt($('r-fps').value);
-  const totalFrames = Math.max(1, Math.round(sec * fps));
-  const cols = parseInt($('r-col').value);
-  const rows = Math.ceil(totalFrames / cols);
+
+  const posStart    = parseFloat($('v-pos-start').value);
+  const posEnd      = parseFloat($('v-pos-end').value);
+  const rows        = Math.max(1, parseInt($('v-rows').value) || 1);
+  const cols        = Math.max(1, parseInt($('v-cols').value) || 1);
+  const totalFrames = rows * cols;
   const fw = canvas.width, fh = canvas.height;
 
-  const sheet = document.createElement('canvas');
-  sheet.width = fw * cols; sheet.height = fh * rows;
-  const sctx = sheet.getContext('2d');
-  sctx.clearRect(0, 0, sheet.width, sheet.height);
-
-  const dur = sec;
-
+  // 渲染所有幀到暫存 canvas 陣列
+  const frames = [];
   for (let i = 0; i < totalFrames; i++) {
-    gl.clearColor(0.0, 0.0, 0.0, 0.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform1f(U['u_streak_only'], 1.0);
-    render((i / totalFrames) * dur);
-      sctx.drawImage(canvas, (i % cols) * fw, Math.floor(i / cols) * fh);
+    const t = totalFrames > 1 ? i / (totalFrames - 1) : 0;
+    const pos = posStart + (posEnd - posStart) * t;
+    gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(U['u_pos'], pos);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    const tmp = document.createElement('canvas');
+    tmp.width = fw; tmp.height = fh;
+    tmp.getContext('2d').drawImage(canvas, 0, 0);
+    frames.push(tmp);
     setStatus(`產生幀 ${i+1}/${totalFrames}…`);
     await new Promise(r => setTimeout(r, 0));
   }
 
-  const a = document.createElement('a');
-  a.download = 'flowlight_spritesheet.png';
-  a.href = sheet.toDataURL('image/png');
-  a.click();
-  setStatus(`完成！${totalFrames} 幀 (${sec}s × ${fps}fps, ${cols}×${rows}) 已下載`);
+  gl.uniform1f(U['u_pos'], parseFloat($('r-pos').value));
+
+  if (mode === 'sheet') {
+    // ── 合圖：所有幀合成一張 sprite sheet ──
+    const sheet = document.createElement('canvas');
+    sheet.width = fw * cols; sheet.height = fh * rows;
+    const sctx = sheet.getContext('2d');
+    sctx.clearRect(0, 0, sheet.width, sheet.height);
+    frames.forEach((f, i) => sctx.drawImage(f, (i % cols) * fw, Math.floor(i / cols) * fh));
+    const a = document.createElement('a');
+    a.download = 'flowlight_sheet.png';
+    a.href = sheet.toDataURL('image/png');
+    a.click();
+    setStatus(`完成！合圖 ${totalFrames} 幀 (${rows}×${cols}) 已下載`);
+
+  } else {
+    // ── 散圖：用 toBlob 取原始 binary 打包成 zip ──
+    const zip = new JSZip();
+    const pad = String(totalFrames).length;
+
+    // toBlob 是非同步，先全部收集
+    const blobs = await Promise.all(frames.map(f =>
+      new Promise(res => f.toBlob(res, 'image/png'))
+    ));
+
+    for (let i = 0; i < blobs.length; i++) {
+      const ab = await blobs[i].arrayBuffer();
+      const fname = `flowlight_${String(i+1).padStart(pad,'0')}.png`;
+      zip.file(fname, ab);
+      setStatus(`打包幀 ${i+1}/${totalFrames}…`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    setStatus('壓縮中…');
+    const zipBlob = await zip.generateAsync({
+      type: 'blob',
+      compression: 'STORE'   // PNG 已壓縮，用 STORE 避免二次壓縮產生異常
+    });
+    const a = document.createElement('a');
+    a.download = 'flowlight_frames.zip';
+    a.href = URL.createObjectURL(zipBlob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setStatus(`完成！散圖 ${totalFrames} 幀已打包下載`);
+  }
+
   render(curT());
 }
 
