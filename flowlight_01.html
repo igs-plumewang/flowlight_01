@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0118)file:///C:/Users/yenpeng/.gemini/antigravity/scratch/FlowLight%20%E2%80%94%20%E5%88%B7%E5%85%89%E5%B7%A5%E5%85%B7.html -->
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowLight — 刷光工具</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./FlowLight — 刷光工具_files/css2" rel="stylesheet">
 <style>
 :root{
   --bg:#0a0a0b;--surface:#111114;--surface2:#18181c;
@@ -17,38 +17,33 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-
 header{padding:1rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:1.25rem;flex-shrink:0;position:relative}
 header::after{content:'';position:absolute;bottom:-1px;left:1.75rem;right:1.75rem;height:1px;background:linear-gradient(90deg,var(--accent),transparent 60%);opacity:0.35}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.02em;color:var(--accent)}
 .logo span{color:var(--muted);font-weight:400}
 .tagline{font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
-
 .app{flex:1;display:grid;grid-template-columns:272px 1fr;min-height:0;overflow:hidden}
-
 aside{border-right:1px solid var(--border);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.25rem;overflow-y:auto;background:var(--surface);flex-shrink:0}
 aside::-webkit-scrollbar{width:3px}
 aside::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
 .sec-label{font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.5rem}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
 .ctrl-group{display:flex;flex-direction:column;gap:0.65rem}
 .ctrl{display:flex;flex-direction:column;gap:4px}
 .ctrl-row{display:flex;align-items:center;gap:6px}
 .ctrl label{font-size:0.65rem;color:var(--muted);letter-spacing:0.04em}
-
 input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:var(--track);border-radius:2px;outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--accent2);transition:transform .1s}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);cursor:pointer}
-
 .vnum{font-size:0.62rem;font-weight:500;color:var(--accent);background:rgba(232,213,163,0.08);border:1px solid rgba(232,213,163,0.15);border-radius:4px;padding:1px 4px;width:52px;text-align:center;font-variant-numeric:tabular-nums;flex-shrink:0;font-family:'DM Mono',monospace;outline:none;-moz-appearance:textfield}
 .vnum::-webkit-inner-spin-button,.vnum::-webkit-outer-spin-button{-webkit-appearance:none}
 .vnum:focus{border-color:var(--accent);background:rgba(232,213,163,0.14)}
-
-input[type=color]{width:30px;height:26px;border-radius:5px;border:1px solid var(--border2);background:none;cursor:pointer;padding:2px;flex-shrink:0}
-
+select.vsel{font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:500;color:var(--accent);background:rgba(232,213,163,0.08);border:1px solid rgba(232,213,163,0.15);border-radius:4px;padding:2px 6px;flex:1;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+select.vsel:focus{border-color:var(--accent);background:rgba(232,213,163,0.14)}
+select.vsel option{background:#1a1a1e;color:var(--text)}
+.bezier-editor{width:100%;height:160px;border-radius:4px;border:1px solid var(--border2);background:var(--track);display:block;margin-top:6px;cursor:crosshair;touch-action:none;user-select:none}
+.bz-coords{font-size:0.55rem;color:var(--muted);font-family:'DM Mono',monospace;text-align:center;margin-top:3px;letter-spacing:0.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .btn-group{display:flex;flex-direction:column;gap:0.45rem;margin-top:auto}
 .btn-row{display:flex;gap:0.4rem}
 .btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.05em;padding:0.5rem 0.8rem;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:var(--surface2);color:var(--text);flex:1;text-align:center}
@@ -56,7 +51,6 @@ input[type=color]{width:30px;height:26px;border-radius:5px;border:1px solid var(
 .btn.accent{background:var(--accent);color:#0a0a0b;border-color:var(--accent);font-weight:500}
 .btn.accent:hover{background:#f0e0b0}
 .btn:disabled{opacity:0.35;cursor:default;pointer-events:none}
-
 main{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--bg);gap:0}
 main::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
 .preview-row{display:none;width:100%;flex:1;min-height:0;gap:1px;background:var(--border)}
@@ -64,7 +58,6 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
 .pane-label{position:absolute;top:8px;left:12px;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);z-index:3;pointer-events:none;background:rgba(10,10,11,0.7);padding:2px 8px;border-radius:20px;border:1px solid var(--border)}
 .checker{background-image:linear-gradient(45deg,#1a1a1a 25%,transparent 25%),linear-gradient(-45deg,#1a1a1a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1a1a 75%),linear-gradient(-45deg,transparent 75%,#1a1a1a 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
 .pane-canvas{display:block;max-width:100%;max-height:100%;object-fit:contain}
-
 #drop-zone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .2s}
 #drop-zone:hover{background:rgba(232,213,163,0.02)}
 #drop-zone.hidden{display:none}
@@ -72,17 +65,13 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
 #drop-zone:hover .drop-icon{border-color:var(--accent2);box-shadow:0 0 20px var(--glow)}
 .drop-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.35rem}
 .drop-sub{font-size:.65rem;color:var(--muted)}
-
-#canvas-wrap{display:none;width:100%;flex:1;min-height:0}
 #glcanvas{display:none}
 #cv-streak{max-width:100%;max-height:100%;object-fit:contain}
 #cv-add{max-width:100%;max-height:100%;object-fit:contain}
-
 .statusbar{position:absolute;bottom:.85rem;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 14px;z-index:10;white-space:nowrap}
-
 @media(max-width:680px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{border-right:none;border-bottom:1px solid var(--border);max-height:42vh}body{overflow:auto}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="./FlowLight — 刷光工具_files/jszip.min.js.下載"></script>
 </head>
 <body>
 
@@ -99,6 +88,7 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
       <div class="ctrl"><label>角度 — Rotator Angle</label><div class="ctrl-row"><input type="range" id="r-ang" min="0" max="360" step="1" value="30"><input type="number" class="vnum" id="v-ang" min="0" max="360" step="1" value="30"></div></div>
       <div class="ctrl"><label>間距 — Light Spacing</label><div class="ctrl-row"><input type="range" id="r-spc" min="0" max="30" step="0.5" value="6"><input type="number" class="vnum" id="v-spc" min="0" max="30" step="0.5" value="6"></div></div>
       <div class="ctrl"><label>粗細 — Light Size</label><div class="ctrl-row"><input type="range" id="r-sz" min="-100" max="100" step="1" value="2"><input type="number" class="vnum" id="v-sz" min="-100" max="100" step="1" value="2"></div></div>
+      <div class="ctrl"><label>實心／漸層 — Softness（1=硬邊 100=羽化）</label><div class="ctrl-row"><input type="range" id="r-soft" min="1" max="100" step="1" value="1"><input type="number" class="vnum" id="v-soft" min="1" max="100" step="1" value="1"></div></div>
     </div>
   </div>
   <div>
@@ -106,6 +96,34 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
     <div class="ctrl-group">
       <div class="ctrl"><label>流動速度 — Time Speed</label><div class="ctrl-row"><input type="range" id="r-spd" min="-3" max="3" step="0.05" value="0.5"><input type="number" class="vnum" id="v-spd" min="-3" max="3" step="0.05" value="0.5"></div></div>
       <div class="ctrl"><label>位移 — Flow Pos</label><div class="ctrl-row"><input type="range" id="r-pos" min="-10" max="10" step="0.01" value="0"><input type="number" class="vnum" id="v-pos" min="-10" max="10" step="0.01" value="0"></div></div>
+      <div class="ctrl">
+        <label>速度 Easing — 緩動曲線（影響預覽及匯出）</label>
+        <div class="ctrl-row" style="gap:6px">
+          <select class="vsel" id="v-easing">
+            <option value="linear">Linear（線性）</option>
+            <option value="ease">Ease（標準）</option>
+            <option value="easeIn">Ease In（緩入）</option>
+            <option value="easeOut" selected="">Ease Out（緩出）</option>
+            <option value="easeInOut">Ease In-Out（緩入緩出）</option>
+            <option value="easeOutBack">Ease Out Back（衝過彈回）</option>
+            <option value="easeInBack">Ease In Back（縮後衝出）</option>
+            <option value="easeOutElastic">Ease Out Elastic（彈性震盪）</option>
+            <option value="stepStart">Step Start（瞬跳開始）</option>
+            <option value="stepEnd">Step End（瞬跳結束）</option>
+            <option value="steps4">Steps 4（4段跳切）</option>
+            <option value="custom">✏ 自訂 Custom</option>
+          </select>
+        </div>
+        <canvas class="bezier-editor" id="bezier-canvas" width="230" height="160" style="cursor: default;"></canvas>
+        <div class="bz-coords" id="bz-coords">cubic-bezier(0.611, 0.381, 0.641, 0.853)</div>
+        <div class="ctrl" style="margin-top:6px">
+          <label>曲線強度 — Intensity（0=線性 100=原始 200=加倍）</label>
+          <div class="ctrl-row">
+            <input type="range" id="r-easing-intensity" min="0" max="200" step="1" value="100">
+            <input type="number" class="vnum" id="v-easing-intensity" min="0" max="200" step="1" value="100">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div>
@@ -123,7 +141,7 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
   <div>
     <div class="sec-label">匯出</div>
     <div class="ctrl-group">
-      <div class="ctrl"><label>位移區間 <span id="lbl-pos-range" style="color:var(--muted);font-weight:400;font-size:0.6rem;letter-spacing:0.02em"></span></label>
+      <div class="ctrl"><label>位移區間</label>
         <div class="ctrl-row" style="gap:6px;align-items:center">
           <input type="number" class="vnum" id="v-pos-start" min="-10" max="10" step="0.01" value="0" style="width:48px">
           <div style="flex:1;position:relative;height:20px;min-height:20px">
@@ -131,74 +149,368 @@ main::before{content:'';position:absolute;inset:0;background-image:linear-gradie
           </div>
           <input type="number" class="vnum" id="v-pos-end" min="-10" max="10" step="0.01" value="1" style="width:48px">
         </div>
-        <div style="height:2px"></div>
       </div>
       <div class="ctrl"><label>行列（如 3×3 = 9 張）</label>
         <div class="ctrl-row" style="gap:6px">
           <input type="number" class="vnum" id="v-rows" min="1" max="12" step="1" value="3" style="width:44px">
           <span style="font-size:0.7rem;color:var(--muted)">×</span>
           <input type="number" class="vnum" id="v-cols" min="1" max="12" step="1" value="3" style="width:44px">
-
         </div>
       </div>
     </div>
   </div>
   <div class="btn-group">
     <div class="btn-row">
-      <button class="btn" id="btn-play" onclick="togglePlay()" disabled>▶ 預覽</button>
-      <button class="btn" id="btn-reup" onclick="reupload()" disabled>↑ 換圖</button>
+      <button class="btn" id="btn-play" onclick="togglePlay()">■ 停止</button>
+      <button class="btn" id="btn-reup" onclick="reupload()">↑ 換圖</button>
     </div>
     <div class="btn-row">
-      <button class="btn accent" id="btn-exp-sheet" onclick="exportSheet('sheet')" disabled>合圖匯出</button>
-      <button class="btn accent" id="btn-exp-seq" onclick="exportSheet('seq')" disabled>散圖匯出</button>
+      <button class="btn accent" id="btn-exp-sheet" onclick="exportSheet(&#39;sheet&#39;)">合圖匯出</button>
+      <button class="btn accent" id="btn-exp-seq" onclick="exportSheet(&#39;seq&#39;)">散圖匯出</button>
     </div>
   </div>
 </aside>
 
 <main>
-  <div id="drop-zone" onclick="document.getElementById('fin').click()">
+  <div id="drop-zone" onclick="document.getElementById(&#39;fin&#39;).click()" class="hidden">
     <div class="drop-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8d5a3" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8d5a3" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
     </div>
     <div class="drop-title">上傳圖片</div>
     <div class="drop-sub">PNG / JPG — 灰階扭曲光條 UV</div>
   </div>
   <input type="file" id="fin" accept="image/*" style="display:none">
-  <canvas id="glcanvas" style="display:none"></canvas>
-  <div id="canvas-wrap" class="preview-row">
+  <canvas id="glcanvas" style="display:none" width="520" height="348"></canvas>
+  <div id="canvas-wrap" class="preview-row" style="display: flex;">
     <div class="preview-pane checker">
       <div class="pane-label">光條 — 透明</div>
-      <canvas id="cv-streak" class="pane-canvas"></canvas>
+      <canvas id="cv-streak" class="pane-canvas" width="520" height="348"></canvas>
     </div>
     <div class="preview-pane" style="background:#111">
       <div class="pane-label">Add — 疊加底圖</div>
-      <canvas id="cv-add" class="pane-canvas"></canvas>
+      <canvas id="cv-add" class="pane-canvas" width="520" height="348"></canvas>
     </div>
   </div>
-  <div class="statusbar" id="status">準備就緒</div>
+  <div class="statusbar" id="status">520×348</div>
 </main>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 
-// ── WebGL init ──
-const canvas = $('glcanvas');
-const glOpts = { premultipliedAlpha: false, preserveDrawingBuffer: true, alpha: true };
-const gl = canvas.getContext('webgl', glOpts) || canvas.getContext('experimental-webgl', glOpts);
-const cvStreak = $('cv-streak');
-const cvAdd    = $('cv-add');
-if (!gl) { alert('瀏覽器不支援 WebGL'); }
+// ── Easing ──
 
-const VS = `
+// cubic-bezier 解算器（CSS 標準，Newton's method）
+function mkCubicBezier(x1, y1, x2, y2) {
+  const cx=3*x1, bx=3*(x2-x1)-cx, ax=1-cx-bx;
+  const cy=3*y1, by=3*(y2-y1)-cy, ay=1-cy-by;
+  function sx(t){ return ((ax*t+bx)*t+cx)*t; }
+  function sy(t){ return ((ay*t+by)*t+cy)*t; }
+  function dsx(t){ return (3*ax*t+2*bx)*t+cx; }
+  function tForX(x){
+    let t=x;
+    for(let i=0;i<8;i++){
+      const dx=sx(t)-x; if(Math.abs(dx)<1e-7) return t;
+      const d=dsx(t); if(Math.abs(d)<1e-7) break;
+      t-=dx/d;
+    }
+    // fallback bisect
+    let lo=0,hi=1; t=x;
+    while(lo<hi){ const mid=(lo+hi)/2; sx(mid)<x?lo=mid:hi=mid; if(hi-lo<1e-5) break; }
+    return (lo+hi)/2;
+  }
+  return x=>{ if(x<=0) return 0; if(x>=1) return 1; return sy(tForX(x)); };
+}
+
+// Bezier 預設值 (x1,y1,x2,y2) — null 表示特殊曲線
+const BZ_PRESETS = {
+  linear:         [0,   0,   1,   1  ],
+  ease:           [0.25,0.1, 0.25,1.0],
+  easeIn:         [0.42,0,   1.0, 1.0],
+  easeOut:        [0.0, 0.0, 0.58,1.0],
+  easeInOut:      [0.42,0,   0.58,1.0],
+  easeOutBack:    null,
+  easeInBack:     null,
+  easeOutElastic: null,
+  stepStart:      null,
+  stepEnd:        null,
+  steps4:         null,
+  custom:         null, // 使用目前 bzState
+};
+
+// 特殊曲線函數（超出 bezier 範圍）
+const SPECIAL_FNS = {
+  easeOutBack:    t=>{ const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); },
+  easeInBack:     t=>{ const c1=1.70158,c3=c1+1; return c3*t*t*t-c1*t*t; },
+  easeOutElastic: t=>{ if(t===0||t===1) return t; const c4=(2*Math.PI)/3; return Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1; },
+  stepStart:      t=>t<=0?0:1,
+  stepEnd:        t=>t<1?0:1,
+  steps4:         t=>Math.floor(t*4)/4,
+};
+
+// 目前 bezier 把手狀態
+let bzState = { x1:0, y1:0, x2:0.58, y2:1 };
+
+function getEasingFn(){
+  const preset = $('v-easing').value;
+  if(SPECIAL_FNS[preset]) return SPECIAL_FNS[preset];
+  // bezier
+  const {x1,y1,x2,y2} = bzState;
+  return mkCubicBezier(x1,y1,x2,y2);
+}
+
+function getEasingIntensity(){ return parseFloat($('v-easing-intensity').value)/100; }
+
+function applyEasing(t){
+  const fn = getEasingFn();
+  const k  = getEasingIntensity();
+  const raw = fn(Math.max(0,Math.min(1,t)));
+  return t + (raw - t) * k;
+}
+
+// ── Bezier Canvas Editor ──
+let easingAnimId = null;
+let easingT = 0;
+let bzDragging = null; // 'p1' | 'p2' | null
+
+function bzToCanvas(bx, by, W, H, pad, yMin, yMax){
+  return [
+    pad + bx * (W - pad*2),
+    H - pad - (by - yMin) / (yMax - yMin) * (H - pad*2)
+  ];
+}
+function canvasToBz(cx, cy, W, H, pad, yMin, yMax){
+  return [
+    Math.max(0, Math.min(1, (cx - pad) / (W - pad*2))),
+    yMin + (H - pad - cy) / (H - pad*2) * (yMax - yMin)
+  ];
+}
+
+function drawBezierEditor(dot01) {
+  const c = $('bezier-canvas');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const pad = 18;
+  const yMin = -0.25, yMax = 1.25; // 允許 overshoot
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#1e1e22'; ctx.fillRect(0,0,W,H);
+
+  // 方格 grid
+  ctx.strokeStyle='rgba(232,213,163,0.08)'; ctx.lineWidth=0.5; ctx.setLineDash([2,3]);
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    const [,gy]=bzToCanvas(0,v,W,H,pad,yMin,yMax);
+    const [,gy0]=bzToCanvas(0,0,W,H,pad,yMin,yMax);
+    const [,gy1]=bzToCanvas(0,1,W,H,pad,yMin,yMax);
+    ctx.beginPath(); ctx.moveTo(pad,gy); ctx.lineTo(W-pad,gy); ctx.stroke();
+    // 垂直格
+    const gx = pad + v*(W-pad*2);
+    ctx.beginPath(); ctx.moveTo(gx,gy1-4); ctx.lineTo(gx,gy0+4); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // 0%/100% 標記線（實線，稍亮）
+  const [,y0c]=bzToCanvas(0,0,W,H,pad,yMin,yMax);
+  const [,y1c]=bzToCanvas(0,1,W,H,pad,yMin,yMax);
+  ctx.strokeStyle='rgba(232,213,163,0.2)'; ctx.lineWidth=0.75;
+  ctx.beginPath(); ctx.moveTo(pad,y0c); ctx.lineTo(W-pad,y0c); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad,y1c); ctx.lineTo(W-pad,y1c); ctx.stroke();
+
+  // diagonal linear 參考線
+  ctx.beginPath(); ctx.strokeStyle='rgba(232,213,163,0.2)'; ctx.lineWidth=0.8; ctx.setLineDash([3,4]);
+  const [lx0,ly0]=bzToCanvas(0,0,W,H,pad,yMin,yMax);
+  const [lx1,ly1]=bzToCanvas(1,1,W,H,pad,yMin,yMax);
+  ctx.moveTo(lx0,ly0); ctx.lineTo(lx1,ly1); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const preset = $('v-easing').value;
+  const isSpecial = !!SPECIAL_FNS[preset];
+
+  // 把手連線 + 把手圓
+  if(!isSpecial){
+    const [p1x,p1y]=bzToCanvas(bzState.x1,bzState.y1,W,H,pad,yMin,yMax);
+    const [p2x,p2y]=bzToCanvas(bzState.x2,bzState.y2,W,H,pad,yMin,yMax);
+    // P0 → P1 連線
+    ctx.beginPath(); ctx.strokeStyle='rgba(232,213,163,0.35)'; ctx.lineWidth=1;
+    ctx.moveTo(lx0,ly0); ctx.lineTo(p1x,p1y); ctx.stroke();
+    // P3 → P2 連線
+    ctx.beginPath();
+    ctx.moveTo(lx1,ly1); ctx.lineTo(p2x,p2y); ctx.stroke();
+    // P1 把手
+    ctx.beginPath(); ctx.arc(p1x,p1y,5.5,0,Math.PI*2);
+    ctx.strokeStyle='#e8d5a3'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='rgba(232,213,163,0.15)'; ctx.fill();
+    // P2 把手
+    ctx.beginPath(); ctx.arc(p2x,p2y,5.5,0,Math.PI*2);
+    ctx.strokeStyle='#e8d5a3'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='rgba(232,213,163,0.15)'; ctx.fill();
+  }
+
+  // Bezier / Special 曲線
+  const fn = isSpecial ? SPECIAL_FNS[preset] : mkCubicBezier(bzState.x1,bzState.y1,bzState.x2,bzState.y2);
+  const k  = getEasingIntensity();
+  ctx.beginPath(); ctx.strokeStyle='#e8d5a3'; ctx.lineWidth=2;
+  for(let i=0;i<=300;i++){
+    const t=i/300;
+    const raw = fn(Math.max(0,Math.min(1,t)));
+    const fy  = t + (raw - t)*k; // intensity blend
+    const [cx2,cy2]=bzToCanvas(t,fy,W,H,pad,yMin,yMax);
+    i===0?ctx.moveTo(cx2,cy2):ctx.lineTo(cx2,cy2);
+  }
+  ctx.stroke();
+
+  // 固定錨點 P0, P3
+  [[0,0],[1,1]].forEach(([bx,by])=>{
+    const [ax,ay]=bzToCanvas(bx,by,W,H,pad,yMin,yMax);
+    ctx.beginPath(); ctx.arc(ax,ay,4,0,Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+  });
+
+  // 移動點（播放中）
+  if(dot01!=null){
+    const dt=Math.max(0,Math.min(1,dot01));
+    const raw=fn(Math.max(0,Math.min(1,dt)));
+    const fy=dt+(raw-dt)*k;
+    const [dx,dy]=bzToCanvas(dt,fy,W,H,pad,yMin,yMax);
+    // 垂直 guide
+    const [,bot]=bzToCanvas(dt,yMin,W,H,pad,yMin,yMax);
+    ctx.beginPath(); ctx.strokeStyle='rgba(232,213,163,0.3)'; ctx.lineWidth=0.75; ctx.setLineDash([2,3]);
+    ctx.moveTo(dx,bot); ctx.lineTo(dx,dy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(dx,dy,5,0,Math.PI*2);
+    ctx.fillStyle='#e8d5a3'; ctx.fill();
+  }
+
+  // 標記文字 0% / 100%
+  ctx.fillStyle='rgba(232,213,163,0.35)'; ctx.font='9px DM Mono,monospace';
+  ctx.fillText('0%', 2, y0c+3);
+  ctx.fillText('100%', 2, y1c+3);
+
+  // 更新座標顯示
+  if(!isSpecial){
+    const r=n=>+n.toFixed(3);
+    $('bz-coords').textContent=`cubic-bezier(${r(bzState.x1)}, ${r(bzState.y1)}, ${r(bzState.x2)}, ${r(bzState.y2)})`;
+  } else {
+    $('bz-coords').textContent=`special: ${preset}`;
+  }
+}
+
+// 把手拖拉互動
+(()=>{
+  const c=$('bezier-canvas');
+  const pad=18, yMin=-0.25, yMax=1.25;
+
+  function getHandle(clientX, clientY){
+    const rect=c.getBoundingClientRect();
+    const scaleX=c.width/rect.width, scaleY=c.height/rect.height;
+    const cx=(clientX-rect.left)*scaleX, cy=(clientY-rect.top)*scaleY;
+    const W=c.width, H=c.height;
+    const [p1x,p1y]=bzToCanvas(bzState.x1,bzState.y1,W,H,pad,yMin,yMax);
+    const [p2x,p2y]=bzToCanvas(bzState.x2,bzState.y2,W,H,pad,yMin,yMax);
+    const d1=Math.hypot(cx-p1x,cy-p1y);
+    const d2=Math.hypot(cx-p2x,cy-p2y);
+    if(d1<12 && d1<=d2) return 'p1';
+    if(d2<12) return 'p2';
+    return null;
+  }
+
+  function applyDrag(clientX, clientY){
+    const rect=c.getBoundingClientRect();
+    const scaleX=c.width/rect.width, scaleY=c.height/rect.height;
+    const cx=(clientX-rect.left)*scaleX, cy=(clientY-rect.top)*scaleY;
+    const [bx,by]=canvasToBz(cx,cy,c.width,c.height,pad,yMin,yMax);
+    if(bzDragging==='p1'){ bzState.x1=bx; bzState.y1=Math.max(-0.5,Math.min(1.5,by)); }
+    else if(bzDragging==='p2'){ bzState.x2=bx; bzState.y2=Math.max(-0.5,Math.min(1.5,by)); }
+    // 切換到 custom
+    $('v-easing').value='custom';
+    drawBezierEditor(easingAnimId!==null?easingT:null);
+  }
+
+  c.addEventListener('mousedown', e=>{
+    const h=getHandle(e.clientX,e.clientY);
+    if(!h) return;
+    bzDragging=h; e.preventDefault();
+  });
+  window.addEventListener('mousemove', e=>{ if(bzDragging) applyDrag(e.clientX,e.clientY); });
+  window.addEventListener('mouseup', ()=>{ bzDragging=null; });
+
+  c.addEventListener('touchstart', e=>{
+    const t=e.touches[0];
+    const h=getHandle(t.clientX,t.clientY);
+    if(!h) return;
+    bzDragging=h; e.preventDefault();
+  },{passive:false});
+  window.addEventListener('touchmove', e=>{ if(bzDragging){ applyDrag(e.touches[0].clientX,e.touches[0].clientY); e.preventDefault(); } },{passive:false});
+  window.addEventListener('touchend', ()=>{ bzDragging=null; });
+
+  // 游標提示
+  c.addEventListener('mousemove', e=>{
+    const preset=$('v-easing').value;
+    if(!!SPECIAL_FNS[preset]){ c.style.cursor='default'; return; }
+    c.style.cursor=getHandle(e.clientX,e.clientY)?'grab':'default';
+  });
+})();
+
+function startEasingAnim(){
+  stopEasingAnim();
+  easingT=0;
+  function loop(ts){
+    easingT=(ts/2500)%1;
+    drawBezierEditor(easingT);
+    easingAnimId=requestAnimationFrame(loop);
+  }
+  easingAnimId=requestAnimationFrame(loop);
+}
+function stopEasingAnim(){
+  if(easingAnimId){ cancelAnimationFrame(easingAnimId); easingAnimId=null; }
+  drawBezierEditor(null);
+}
+
+// 預設切換 → 更新 bzState 把手
+$('v-easing').onchange=()=>{
+  const preset=$('v-easing').value;
+  const bz=BZ_PRESETS[preset];
+  if(bz){ bzState={x1:bz[0],y1:bz[1],x2:bz[2],y2:bz[3]}; }
+  drawBezierEditor(null);
+  if(playing) startEasingAnim();
+};
+
+// Intensity 控制
+(()=>{
+  const rng=$('r-easing-intensity'), num=$('v-easing-intensity');
+  rng.oninput=()=>{ num.value=rng.value; drawBezierEditor(easingAnimId!==null?easingT:null); };
+  const applyNum=()=>{
+    let v=parseInt(num.value); if(isNaN(v)) return;
+    v=Math.max(0,Math.min(200,v)); num.value=v; rng.value=v;
+    drawBezierEditor(easingAnimId!==null?easingT:null);
+  };
+  num.onchange=applyNum;
+  num.onkeydown=e=>{ if(e.key==='Enter') applyNum(); };
+})();
+
+drawBezierEditor(null);
+
+// ── WebGL ──
+const canvas=$('glcanvas');
+const glOpts={premultipliedAlpha:false,preserveDrawingBuffer:true,alpha:true};
+const gl=canvas.getContext('webgl',glOpts)||canvas.getContext('experimental-webgl',glOpts);
+const cvStreak=$('cv-streak'), cvAdd=$('cv-add');
+if(!gl){ alert('瀏覽器不支援 WebGL'); }
+
+const VS=`
 attribute vec2 a_pos;
 varying vec2 v_uv;
 void main(){
-  v_uv = vec2(a_pos.x * 0.5 + 0.5, 0.5 - a_pos.y * 0.5);
-  gl_Position = vec4(a_pos, 0.0, 1.0);
+  v_uv=vec2(a_pos.x*0.5+0.5,0.5-a_pos.y*0.5);
+  gl_Position=vec4(a_pos,0.0,1.0);
 }`;
 
-const FS = `
+// Softness:
+//   0 = 完全硬邊（step函數），光條邊界像刀切
+//   1 = 完全羽化（smoothstep），邊緣大幅模糊漸層
+// 做法：用 edgeWidth 控制 smoothstep 的過渡帶寬
+//   edgeWidth→0 時 step 極銳利，→大值時羽化寬
+const FS=`
 precision highp float;
 varying vec2 v_uv;
 uniform sampler2D u_tex;
@@ -211,284 +523,300 @@ uniform float u_intensity;
 uniform float u_pos;
 uniform vec4  u_color;
 uniform float u_aspect;
+uniform float u_softness;
+
 void main(){
-  vec2 uv = v_uv;
-  vec4 texCol = texture2D(u_tex, uv);
-  float r = texCol.r, g = texCol.g, b = texCol.b, a = texCol.a;
+  vec2 uv=v_uv;
+  vec4 texCol=texture2D(u_tex,uv);
+  float r=texCol.r,g=texCol.g,b=texCol.b,a=texCol.a;
 
-  // 1. 先旋轉（以圖片中心，補正長寬比）
-  float rad    = u_angle * (3.14159265 / 180.0);
-  float cosA   = cos(rad), sinA = sin(rad);
-  vec2  c      = uv - vec2(0.5);
-  c.x *= u_aspect;
-  float ru     = dot(vec2(cosA, -sinA), c) + 0.5;
+  float rad=u_angle*(3.14159265/180.0);
+  float cosA=cos(rad),sinA=sin(rad);
+  vec2 c=uv-vec2(0.5);
+  c.x*=u_aspect;
+  float ru=dot(vec2(cosA,-sinA),c)+0.5;
 
-  // 2. 再用灰階做扭曲（只影響條紋 phase，不影響旋轉軸）
-  float gray   = r*0.299 + g*0.587 + b*0.114;
-  float offset = gray * u_intensity;
-  ru += offset;
-  float phase  = (ru + u_time * u_speed + u_pos) * u_spacing;
-  float f      = fract(phase);
-  float tri    = abs((f - 0.5) * 2.0);
-  float shaped = (tri - 0.5) * 7.06 + u_size;
-  float mask   = clamp(shaped, 0.0, 1.0);
-  // white streak, alpha = mask * 底圖alpha（有底圖才顯示光條）
-  gl_FragColor = vec4(1.0, 1.0, 1.0, mask * a * u_color.a);
+  float gray=r*0.299+g*0.587+b*0.114;
+  ru+=gray*u_intensity;
+
+  float phase=(ru+u_time*u_speed+u_pos)*u_spacing;
+  float f=fract(phase);
+  // tri: 0 at centre of streak, 1 at edges
+  float tri=abs(f-0.5)*2.0;
+
+  // half-width of streak in [0,1] phase space
+  float halfW=clamp(u_size,0.0,1.0);
+
+  // edgeWidth: 0 → knife-sharp,  grows with softness
+  // softness=0 → edgeWidth=0.0 (pure step)
+  // softness=1 → edgeWidth=halfW (full feather across whole streak)
+  float edgeWidth=u_softness*halfW;
+  float lo=1.0-halfW-edgeWidth;
+  float hi=1.0-halfW+edgeWidth;
+  float mask;
+  if(edgeWidth<0.0001){
+    mask=tri<=1.0-halfW?1.0:0.0;
+  } else {
+    mask=1.0-smoothstep(lo,hi,tri);
+  }
+
+  gl_FragColor=vec4(1.0,1.0,1.0,mask*a*u_color.a);
 }`;
 
-function mkShader(type, src) {
-  const s = gl.createShader(type);
-  gl.shaderSource(s, src); gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+function mkShader(type,src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
   return s;
 }
-const prog = gl.createProgram();
-gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
-gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
-gl.linkProgram(prog);
-gl.useProgram(prog);
+const prog=gl.createProgram();
+gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,VS));
+gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,FS));
+gl.linkProgram(prog); gl.useProgram(prog);
 gl.enable(gl.BLEND);
-gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
 
-const buf = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-const aPos = gl.getAttribLocation(prog, 'a_pos');
+const buf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+const aPos=gl.getAttribLocation(prog,'a_pos');
 gl.enableVertexAttribArray(aPos);
-gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
 
-const U = {};
-['u_angle','u_spacing','u_size','u_speed','u_time','u_intensity','u_pos','u_color','u_tex','u_aspect']
-  .forEach(n => U[n] = gl.getUniformLocation(prog, n));
+const U={};
+['u_angle','u_spacing','u_size','u_speed','u_time','u_intensity',
+ 'u_pos','u_color','u_tex','u_aspect','u_softness']
+  .forEach(n=>U[n]=gl.getUniformLocation(prog,n));
 
-const tex = gl.createTexture();
-gl.bindTexture(gl.TEXTURE_2D, tex);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-gl.uniform1i(U['u_tex'], 0);
+const tex=gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D,tex);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.uniform1i(U['u_tex'],0);
 
-let imgLoaded = false, srcImg = null;
-let animId = null, playing = false, startTime = null, pausedTime = 0;
+let imgLoaded=false, srcImg=null;
+let animId=null, playing=false;
+let playStartWall=null; // wall-clock ms when play started
+let playAccum=0;        // accumulated virtual time before last stop
 
 // ── Sliders ──
-const sliders = [
-  ['r-ang','v-ang'],
-  ['r-spc','v-spc'],
-  ['r-sz', 'v-sz' ],
-  ['r-spd','v-spd'],
-  ['r-pos','v-pos'],
-  ['r-int','v-int'],
-  ['r-alpha','v-alpha'],
+const sliders=[
+  ['r-ang','v-ang'],['r-spc','v-spc'],['r-sz','v-sz'],
+  ['r-spd','v-spd'],['r-pos','v-pos'],['r-int','v-int'],
+  ['r-alpha','v-alpha'],['r-soft','v-soft'],
 ];
-sliders.forEach(([rid, nid]) => {
-  const range = $(rid), num = $(nid);
-  if (!range || !num) return;
-  range.oninput = () => {
-    num.value = range.value;
-    if (imgLoaded && !playing) render(curT());
+sliders.forEach(([rid,nid])=>{
+  const range=$(rid), num=$(nid);
+  if(!range||!num) return;
+  range.oninput=()=>{ num.value=range.value; if(imgLoaded&&!playing) render(playAccum); };
+  const applyNum=()=>{
+    let v=parseFloat(num.value);
+    if(isNaN(v)) return;
+    v=Math.max(parseFloat(range.min),Math.min(parseFloat(range.max),v));
+    num.value=v; range.value=v;
+    if(imgLoaded&&!playing) render(playAccum);
   };
-  const applyNum = () => {
-    let v = parseFloat(num.value);
-    if (isNaN(v)) return;
-    v = Math.max(parseFloat(range.min), Math.min(parseFloat(range.max), v));
-    num.value = v;
-    range.value = v;
-    if (imgLoaded && !playing) render(curT());
-  };
-  num.onchange = applyNum;
-  num.onkeydown = e => { if (e.key === 'Enter') applyNum(); };
+  num.onchange=applyNum;
+  num.onkeydown=e=>{ if(e.key==='Enter') applyNum(); };
 });
 
-function curT() {
-  return startTime ? (performance.now() - startTime) / 1000 : 0;
-}
-
 // ── Upload ──
-$('fin').onchange = e => { const f = e.target.files[0]; if (f) loadFile(f); };
+$('fin').onchange=e=>{ const f=e.target.files[0]; if(f) loadFile(f); };
 
-function loadFile(f) {
-  const img = new Image();
-  img.onload = () => {
-    srcImg = img;
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-
-    const maxSide = 800;
-    const sc = Math.min(maxSide / img.naturalWidth, maxSide / img.naturalHeight, 1);
-    canvas.width  = Math.round(img.naturalWidth  * sc);
-    canvas.height = Math.round(img.naturalHeight * sc);
-    cvStreak.width = cvAdd.width  = canvas.width;
-    cvStreak.height = cvAdd.height = canvas.height;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-
-    imgLoaded = true;
-    startTime = performance.now();
-    pausedTime = 0;
-
+function loadFile(f){
+  const img=new Image();
+  img.onload=()=>{
+    srcImg=img;
+    gl.bindTexture(gl.TEXTURE_2D,tex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+    const maxSide=800;
+    const sc=Math.min(maxSide/img.naturalWidth,maxSide/img.naturalHeight,1);
+    canvas.width=Math.round(img.naturalWidth*sc);
+    canvas.height=Math.round(img.naturalHeight*sc);
+    cvStreak.width=cvAdd.width=canvas.width;
+    cvStreak.height=cvAdd.height=canvas.height;
+    gl.viewport(0,0,canvas.width,canvas.height);
+    imgLoaded=true; playAccum=0; playStartWall=null;
     $('drop-zone').classList.add('hidden');
-    $('canvas-wrap').style.display = 'flex';
-    ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id => $(id).disabled = false);
+    $('canvas-wrap').style.display='flex';
+    ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id=>$(id).disabled=false);
     render(0);
     setStatus(`${img.naturalWidth}×${img.naturalHeight}`);
   };
-  img.onerror = () => setStatus('圖片載入失敗，請換一張');
-  img.src = URL.createObjectURL(f);
+  img.onerror=()=>setStatus('圖片載入失敗，請換一張');
+  img.src=URL.createObjectURL(f);
 }
 
 // ── Render ──
-function render(t) {
-  if (!imgLoaded) return;
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  const fa = parseFloat($('r-alpha').value);
-  gl.uniform1f(U['u_angle'],     parseFloat($('r-ang').value));
-  gl.uniform1f(U['u_spacing'],   parseFloat($('r-spc').value));
-  gl.uniform1f(U['u_size'],      parseFloat($('r-sz').value) / 10.0);
-  gl.uniform1f(U['u_speed'],     parseFloat($('r-spd').value));
-  gl.uniform1f(U['u_time'],      t);
-  gl.uniform1f(U['u_intensity'], parseFloat($('r-int').value) / 10.0);
-  gl.uniform1f(U['u_pos'],       parseFloat($('r-pos').value));
-  gl.uniform4f(U['u_color'], 1.0, 1.0, 1.0, fa);
-  gl.uniform1f(U['u_aspect'], canvas.width / canvas.height);
-  gl.clearColor(0.0, 0.0, 0.0, 0.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+// virtualTime: 已經套用 easing 後的「光條位移時間」
+function render(virtualTime){
+  if(!imgLoaded) return;
+  gl.viewport(0,0,canvas.width,canvas.height);
+  const fa=parseFloat($('r-alpha').value);
+  const softRaw=parseFloat($('r-soft').value);
+  // softness: 1→0.0(銳利), 100→1.0(全羽化)
+  const softness=(softRaw-1)/99.0;
+  // size: 轉成 0~1 half-width
+  // r-sz: -100~100, 我們把 0 對應 half-width=0.4, 範圍縮放
+  const szRaw=parseFloat($('r-sz').value);
+  const halfW=0.4+szRaw/100.0*0.4; // -100→0.0, 0→0.4, 100→0.8
+  gl.uniform1f(U['u_angle'],   parseFloat($('r-ang').value));
+  gl.uniform1f(U['u_spacing'], parseFloat($('r-spc').value));
+  gl.uniform1f(U['u_size'],    halfW);
+  gl.uniform1f(U['u_speed'],   parseFloat($('r-spd').value));
+  gl.uniform1f(U['u_time'],    virtualTime);
+  gl.uniform1f(U['u_intensity'],parseFloat($('r-int').value)/10.0);
+  gl.uniform1f(U['u_pos'],     parseFloat($('r-pos').value));
+  gl.uniform4f(U['u_color'],1.0,1.0,1.0,fa);
+  gl.uniform1f(U['u_aspect'],  canvas.width/canvas.height);
+  gl.uniform1f(U['u_softness'],softness);
+  gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
   updatePreviews();
 }
 
-function updatePreviews() {
-  const W = canvas.width, H = canvas.height;
-
-  // ── 左：光條透明（直接複製 GL 輸出）
-  const sctx = cvStreak.getContext('2d');
-  sctx.clearRect(0, 0, W, H);
-  sctx.drawImage(canvas, 0, 0);
-
-  // ── 右：Add 疊加在原圖
-  const actx = cvAdd.getContext('2d');
-  actx.clearRect(0, 0, W, H);
-  actx.drawImage(srcImg, 0, 0, W, H);          // 先畫底圖
-  actx.globalCompositeOperation = 'screen';    // Add / Screen 疊光條
-  actx.drawImage(canvas, 0, 0);
-  actx.globalCompositeOperation = 'source-over';
+function updatePreviews(){
+  const W=canvas.width,H=canvas.height;
+  const sctx=cvStreak.getContext('2d');
+  sctx.clearRect(0,0,W,H); sctx.drawImage(canvas,0,0);
+  const actx=cvAdd.getContext('2d');
+  actx.clearRect(0,0,W,H);
+  actx.drawImage(srcImg,0,0,W,H);
+  actx.globalCompositeOperation='screen';
+  actx.drawImage(canvas,0,0);
+  actx.globalCompositeOperation='source-over';
 }
 
-// ── Preview ──
-function togglePlay() { playing ? stopPlay() : startPlay(); }
-
-function startPlay() {
-  if (!imgLoaded) { setStatus('請先上傳圖片'); return; }
-  playing = true;
-  $('btn-play').textContent = '■ 停止';
-  startTime = performance.now() - pausedTime * 1000;
-  (function loop() {
-    render((performance.now() - startTime) / 1000);
-    animId = requestAnimationFrame(loop);
-  })();
+// ── Play / Easing loop ──
+// Easing 作用在「時間進度」上：
+// 每幀計算 wallDelta，用 easing 函數求「此時刻的速度倍率」
+// 讓光條在一個週期內（固定1秒）加減速
+const PERIOD=2.0; // easing 週期秒數
+function easingSpeed(wallT){
+  // 取目前週期進度 t∈[0,1]，求 easing 斜率（導數）作為速度倍率
+  const fn=getEasing();
+  const t=(wallT%PERIOD)/PERIOD;
+  const eps=0.001;
+  const t1=Math.min(t+eps,1.0);
+  const slope=(fn(t1)-fn(Math.max(t-eps,0)))/(2*eps*PERIOD||eps);
+  // 歸一化：linear 斜率=1/PERIOD，我們讓 linear 保持原速
+  return slope*PERIOD;
 }
 
-function stopPlay() {
-  playing = false;
-  if (animId) { cancelAnimationFrame(animId); animId = null; }
-  pausedTime = startTime ? (performance.now() - startTime) / 1000 : 0;
-  $('btn-play').textContent = '▶ 預覽';
+function togglePlay(){ playing?stopPlay():startPlay(); }
+
+function startPlay(){
+  if(!imgLoaded){ setStatus('請先上傳圖片'); return; }
+  playing=true;
+  $('btn-play').textContent='■ 停止';
+  playStartWall=performance.now();
+  startEasingAnim();
+  (function loop(now){
+    const wallSec=(now-playStartWall)/1000;
+    // virtualTime: 積分 easing 速度
+    // 簡單方式：virtualTime = playAccum + integral
+    // 我們用數值積分（cumulative sum in loop）→
+    // 每幀直接用 wallSec 當輸入給 easing，輸出當 multiplier
+    // 讓 virtualTime = playAccum + easedWallSec
+    // easedWallSec: 把 wallSec 套上 easing（讓週期內速度起伏）
+    const cycles=Math.floor(wallSec/PERIOD);
+    const frac=(wallSec%PERIOD)/PERIOD;
+    const easedSec=(cycles+applyEasing(frac))*PERIOD;
+    render(playAccum+easedSec);
+    // 更新 easing dot（0~1 週期進度）
+    easingT=frac;
+    animId=requestAnimationFrame(loop);
+  })(performance.now());
 }
 
-function reupload() {
-  stopPlay(); pausedTime = 0; startTime = null; imgLoaded = false;
+function stopPlay(){
+  playing=false;
+  if(animId){ cancelAnimationFrame(animId); animId=null; }
+  // 保存目前 virtualTime
+  if(playStartWall!==null){
+    const wallSec=(performance.now()-playStartWall)/1000;
+    const cycles=Math.floor(wallSec/PERIOD);
+    const frac=(wallSec%PERIOD)/PERIOD;
+    playAccum+=(cycles+applyEasing(frac))*PERIOD;
+    playStartWall=null;
+  }
+  stopEasingAnim();
+  $('btn-play').textContent='▶ 預覽';
+}
+
+function reupload(){
+  stopPlay(); playAccum=0; playStartWall=null; imgLoaded=false;
   $('drop-zone').classList.remove('hidden');
-  $('canvas-wrap').style.display = 'none';
-  ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id => $(id).disabled = true);
+  $('canvas-wrap').style.display='none';
+  ['btn-play','btn-reup','btn-exp-sheet','btn-exp-seq'].forEach(id=>$(id).disabled=true);
   setStatus('準備就緒');
 }
 
 // ── Export ──
-async function exportSheet(mode) {
-  if (!imgLoaded) { setStatus('請先上傳圖片'); return; }
+async function exportSheet(mode){
+  if(!imgLoaded){ setStatus('請先上傳圖片'); return; }
   stopPlay();
-
-  const posStart    = parseFloat($('v-pos-start').value);
-  const posEnd      = parseFloat($('v-pos-end').value);
-  const rows        = Math.max(1, parseInt($('v-rows').value) || 1);
-  const cols        = Math.max(1, parseInt($('v-cols').value) || 1);
-  const totalFrames = rows * cols;
-  const fw = canvas.width, fh = canvas.height;
-
-  // 渲染所有幀到暫存 canvas 陣列
-  const frames = [];
-  for (let i = 0; i < totalFrames; i++) {
-    const t = totalFrames > 1 ? i / (totalFrames - 1) : 0;
-    const pos = posStart + (posEnd - posStart) * t;
+  const posStart=parseFloat($('v-pos-start').value);
+  const posEnd=parseFloat($('v-pos-end').value);
+  const rows=Math.max(1,parseInt($('v-rows').value)||1);
+  const cols=Math.max(1,parseInt($('v-cols').value)||1);
+  const totalFrames=rows*cols;
+  const fw=canvas.width, fh=canvas.height;
+  const frames=[];
+  for(let i=0;i<totalFrames;i++){
+    const tLin=totalFrames>1?i/(totalFrames-1):0;
+    const tEased=applyEasing(Math.max(0,Math.min(1,tLin)));
+    const pos=posStart+(posEnd-posStart)*tEased;
     gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform1f(U['u_pos'], pos);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    const tmp = document.createElement('canvas');
-    tmp.width = fw; tmp.height = fh;
-    tmp.getContext('2d').drawImage(canvas, 0, 0);
+    gl.uniform1f(U['u_pos'],pos);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    const tmp=document.createElement('canvas');
+    tmp.width=fw; tmp.height=fh;
+    tmp.getContext('2d').drawImage(canvas,0,0);
     frames.push(tmp);
     setStatus(`產生幀 ${i+1}/${totalFrames}…`);
-    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r=>setTimeout(r,0));
   }
+  gl.uniform1f(U['u_pos'],parseFloat($('r-pos').value));
 
-  gl.uniform1f(U['u_pos'], parseFloat($('r-pos').value));
-
-  if (mode === 'sheet') {
-    // ── 合圖：所有幀合成一張 sprite sheet ──
-    const sheet = document.createElement('canvas');
-    sheet.width = fw * cols; sheet.height = fh * rows;
-    const sctx = sheet.getContext('2d');
-    sctx.clearRect(0, 0, sheet.width, sheet.height);
-    frames.forEach((f, i) => sctx.drawImage(f, (i % cols) * fw, Math.floor(i / cols) * fh));
-    const a = document.createElement('a');
-    a.download = 'flowlight_sheet.png';
-    a.href = sheet.toDataURL('image/png');
-    a.click();
+  if(mode==='sheet'){
+    const sheet=document.createElement('canvas');
+    sheet.width=fw*cols; sheet.height=fh*rows;
+    const sctx=sheet.getContext('2d');
+    frames.forEach((f,i)=>sctx.drawImage(f,(i%cols)*fw,Math.floor(i/cols)*fh));
+    const a=document.createElement('a');
+    a.download='flowlight_sheet.png'; a.href=sheet.toDataURL('image/png'); a.click();
     setStatus(`完成！合圖 ${totalFrames} 幀 (${rows}×${cols}) 已下載`);
-
   } else {
-    // ── 散圖：用 toBlob 取原始 binary 打包成 zip ──
-    const zip = new JSZip();
-    const pad = String(totalFrames).length;
-
-    // toBlob 是非同步，先全部收集
-    const blobs = await Promise.all(frames.map(f =>
-      new Promise(res => f.toBlob(res, 'image/png'))
-    ));
-
-    for (let i = 0; i < blobs.length; i++) {
-      const ab = await blobs[i].arrayBuffer();
-      const fname = `flowlight_${String(i+1).padStart(pad,'0')}.png`;
-      zip.file(fname, ab);
+    const zip=new JSZip();
+    const pad=String(totalFrames).length;
+    const blobs=await Promise.all(frames.map(f=>new Promise(res=>f.toBlob(res,'image/png'))));
+    for(let i=0;i<blobs.length;i++){
+      zip.file(`flowlight_${String(i+1).padStart(pad,'0')}.png`,await blobs[i].arrayBuffer());
       setStatus(`打包幀 ${i+1}/${totalFrames}…`);
-      await new Promise(r => setTimeout(r, 0));
+      await new Promise(r=>setTimeout(r,0));
     }
-
     setStatus('壓縮中…');
-    const zipBlob = await zip.generateAsync({
-      type: 'blob',
-      compression: 'STORE'   // PNG 已壓縮，用 STORE 避免二次壓縮產生異常
-    });
-    const a = document.createElement('a');
-    a.download = 'flowlight_frames.zip';
-    a.href = URL.createObjectURL(zipBlob);
-    a.click();
+    const zipBlob=await zip.generateAsync({type:'blob',compression:'STORE'});
+    const a=document.createElement('a');
+    a.download='flowlight_frames.zip'; a.href=URL.createObjectURL(zipBlob); a.click();
     URL.revokeObjectURL(a.href);
     setStatus(`完成！散圖 ${totalFrames} 幀已打包下載`);
   }
-
-  render(curT());
+  render(playAccum);
 }
 
-function setStatus(msg) { $('status').textContent = msg; }
+function setStatus(msg){ $('status').textContent=msg; }
 
-// Drag & drop
-document.addEventListener('dragover', e => e.preventDefault());
-document.addEventListener('drop', e => {
+document.addEventListener('dragover',e=>e.preventDefault());
+document.addEventListener('drop',e=>{
   e.preventDefault();
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('image/')) loadFile(f);
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')) loadFile(f);
 });
 </script>
-</body>
-</html>
+
+
+</body></html>
